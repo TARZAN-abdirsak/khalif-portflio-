@@ -188,9 +188,7 @@ export function renderThankYouEmail(l: LeadMail): string {
   const heart = `<span style="color:#e11d48;">&#9829;</span>`;
   const p = `font-family:${FONT};margin:0 0 20px;color:#374151;font-size:15px;line-height:1.6;`;
 
-  // Edge-to-edge banner image at the top
-  const bannerUrl = process.env.BANNER_URL || 'https://images.unsplash.com/photo-1554774853-719586f82d77?w=600&h=200&fit=crop';
-  const head = `<tr><td style="padding:0;"><img src="${bannerUrl}" alt="" width="600" style="display:block;width:100%;max-width:600px;border:0;"></td></tr>`;
+  const head = '';
 
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
   <body style="margin:0;padding:0;background-color:#f5f5f5;-webkit-font-smoothing:antialiased;">

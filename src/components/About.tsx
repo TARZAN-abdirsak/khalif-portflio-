@@ -1,29 +1,51 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { SectionHead } from './SectionHead';
 
 export function About() {
   // Spotify Widget State
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [seconds, setSeconds] = useState(45); // Start at 0:45 for a realistic effect
-  const totalDuration = 163; // 2:43 total duration
+  const [seconds, setSeconds] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Progress timer effect
   useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setSeconds((prev) => (prev >= totalDuration ? 0 : prev + 1));
-    }, 1000);
-    return () => clearInterval(interval);
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(() => setIsPlaying(false));
+      } else {
+        audioRef.current.pause();
+      }
+    }
   }, [isPlaying]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setSeconds(Math.floor(audioRef.current.currentTime));
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setTotalDuration(Math.floor(audioRef.current.duration));
+    }
+  };
+
   const formatTime = (sec: number) => {
+    if (isNaN(sec)) return '0:00';
     const m = Math.floor(sec / 60);
-    const s = sec % 60;
+    const s = Math.floor(sec % 60);
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const progressPercent = (seconds / totalDuration) * 100;
+  const progressPercent = totalDuration > 0 ? (seconds / totalDuration) * 100 : 0;
 
   return (
     <section id="about">
@@ -34,6 +56,14 @@ export function About() {
         <aside className="about-left">
           {/* Glassmorphic Spotify Card */}
           <div className="spotify-widget">
+            <audio 
+              ref={audioRef} 
+              src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" 
+              loop 
+              preload="metadata"
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+            />
             <header className="spotify-header">
               <div className="spotify-logo-group">
                 <svg
@@ -96,7 +126,11 @@ export function About() {
               <div className="spotify-controls">
                 <button
                   className="spotify-ctrl-btn"
-                  onClick={() => setSeconds(Math.max(0, seconds - 10))}
+                  onClick={() => {
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
+                    }
+                  }}
                   aria-label="Skip backward 10 seconds"
                 >
                   <svg viewBox="0 0 24 24">
@@ -124,7 +158,11 @@ export function About() {
 
                 <button
                   className="spotify-ctrl-btn"
-                  onClick={() => setSeconds(Math.min(totalDuration, seconds + 10))}
+                  onClick={() => {
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
+                    }
+                  }}
                   aria-label="Skip forward 10 seconds"
                 >
                   <svg viewBox="0 0 24 24">

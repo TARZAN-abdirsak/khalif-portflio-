@@ -5,7 +5,7 @@
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from './_lib/firebase';
-import { notifyContact } from './_lib/resend';
+import { notifyContact, sendLeadConfirmation } from './_lib/resend';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_MESSAGE = 4000;
@@ -41,6 +41,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await notifyContact({ email, message });
     } catch (err) {
       console.error('notifyContact failed:', err);
+    }
+
+    try {
+      await sendLeadConfirmation({
+        name: 'there',
+        email,
+        need: message,
+      });
+    } catch (err) {
+      console.error('sendLeadConfirmation failed:', err);
     }
 
     return res.status(201).json({ ok: true });
