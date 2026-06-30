@@ -172,7 +172,7 @@ body::before {
 
 :root[data-theme='dark'] .brand-logo--night {
   display: block;
-  transform: scale(3);
+  transform: scale(5);
 }
 
 .brand-word {
