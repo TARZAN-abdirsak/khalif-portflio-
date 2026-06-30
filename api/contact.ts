@@ -4,8 +4,8 @@
  * Saves the message to Firestore and emails Khalif (best-effort).
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from './_lib/firebase';
-import { notifyContact, sendLeadConfirmation } from './_lib/resend';
+import { getDb } from './_lib/firebase.js';
+import { notifyContact, sendLeadConfirmation } from './_lib/resend.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_MESSAGE = 4000;

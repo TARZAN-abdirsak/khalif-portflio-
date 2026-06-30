@@ -14,9 +14,9 @@ import {
   type FunctionDeclaration,
   type Part,
 } from '@google/generative-ai';
-import { SYSTEM_PROMPT } from './_lib/knowledge';
-import { getDb } from './_lib/firebase';
-import { notifyLead, sendLeadConfirmation } from './_lib/resend';
+import { SYSTEM_PROMPT } from './_lib/knowledge.js';
+import { getDb } from './_lib/firebase.js';
+import { notifyLead, sendLeadConfirmation } from './_lib/resend.js';
 
 const MAX_MESSAGES = 24;
 const MAX_TEXT = 4000;

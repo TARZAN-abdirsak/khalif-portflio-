@@ -5,8 +5,8 @@
  * All Firebase access is server-side; the browser never sees Firebase config.
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from './_lib/firebase';
-import { notifyFeedback } from './_lib/resend';
+import { getDb } from './_lib/firebase.js';
+import { notifyFeedback } from './_lib/resend.js';
 
 const COLLECTION = 'feedback';
 const MAX_MESSAGE = 2000;
