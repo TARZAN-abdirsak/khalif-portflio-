@@ -2,13 +2,36 @@ import { useState, type FormEvent } from 'react';
 
 export function Footer() {
   const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
+    if (status === 'sending') return;
+    if (!email.trim() || !message.trim()) {
+      setError('Please add your email and a message.');
+      return;
+    }
+
+    setStatus('sending');
+    setError('');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), message: message.trim() }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? 'Could not send.');
+      }
+      setStatus('sent');
       setEmail('');
+      setMessage('');
+    } catch (err) {
+      setStatus('idle');
+      setError(err instanceof Error ? err.message : 'Could not send — please try again.');
     }
   };
 
@@ -29,7 +52,6 @@ export function Footer() {
             <li><a href="#expertise">Services</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#feedback">Feedback</a></li>
-            <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a></li>
           </ul>
         </div>
 
@@ -38,43 +60,46 @@ export function Footer() {
           <h4 className="footer-col-title">Social</h4>
           <ul className="footer-col-links">
             <li>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-                (X) Twitter
-              </a>
-            </li>
-            <li>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
                 LinkedIn
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/252614177744" target="_blank" rel="noopener noreferrer">
+                WhatsApp
               </a>
             </li>
           </ul>
         </div>
 
-        {/* Newsletter Column */}
+        {/* Contact Column */}
         <div className="footer-col footer-col-newsletter">
-          <h4 className="footer-col-title">Newsletter</h4>
-          <p className="footer-newsletter-desc">
-            Subscribe to stay up to date with the latest news and projects.
-          </p>
-          {subscribed ? (
-            <p className="footer-success-message">Thank you for subscribing!</p>
+          <h4 className="footer-col-title">Get in touch</h4>
+          {status === 'sent' ? (
+            <p className="footer-success-message">
+              Thanks — your message is on its way. Khalif will get back to you soon.
+            </p>
           ) : (
             <form className="footer-newsletter-form" onSubmit={handleSubmit}>
               <input
                 type="email"
                 required
-                placeholder="Email address"
+                placeholder="Your email"
                 className="footer-newsletter-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <button type="submit" className="footer-newsletter-btn">
-                Subscribe
+              <textarea
+                required
+                rows={3}
+                placeholder="How can Khalif help?"
+                className="footer-newsletter-textarea"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              {error && <p className="footer-form-error">{error}</p>}
+              <button type="submit" className="footer-newsletter-btn" disabled={status === 'sending'}>
+                {status === 'sending' ? 'Sending…' : 'Send message'}
               </button>
             </form>
           )}

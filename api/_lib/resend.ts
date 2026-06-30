@@ -237,3 +237,38 @@ export async function sendLeadConfirmation(l: LeadMail): Promise<void> {
     html: renderThankYouEmail(l),
   });
 }
+
+/* ── Contact form message (footer) → Khalif ── */
+
+export interface ContactMail {
+  email: string;
+  message: string;
+}
+
+export function renderContactEmail(c: ContactMail): string {
+  const body = `
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr>
+      <td style="font-family:${FONT};color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:4px 16px 4px 0;white-space:nowrap;">From</td>
+      <td style="font-family:${FONT};color:${C.text};font-size:15px;padding:4px 0;"><a href="mailto:${esc(c.email)}" style="color:${C.ink};text-decoration:none;border-bottom:1px solid ${C.border};">${esc(c.email)}</a></td>
+    </tr></table>
+    <p style="font-family:${FONT};margin:0 0 4px;color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;">Message</p>
+    ${quoteCard(c.message)}
+    ${button('Reply', `mailto:${c.email}`)}`;
+
+  return shell({
+    preheader: c.message.slice(0, 90),
+    eyebrow: 'New contact message',
+    heading: 'Someone messaged you from the site',
+    body,
+  });
+}
+
+export async function notifyContact(c: ContactMail): Promise<void> {
+  await getClient().emails.send({
+    from: from(),
+    to: to(),
+    replyTo: c.email,
+    subject: `New message from ${c.email}`,
+    html: renderContactEmail(c),
+  });
+}
