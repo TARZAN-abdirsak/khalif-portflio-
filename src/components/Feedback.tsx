@@ -4,27 +4,6 @@ import type { Testimonial } from '../types';
 import { SectionHead } from './SectionHead';
 import { StarRating } from './StarRating';
 
-const STORAGE_KEY = 'feedback.testimonials';
-
-/**
- * On the very first visit we seed localStorage with the defaults, after
- * which the stored list is the single source of truth — so every review,
- * including the seeded ones, can be deleted. An empty list stays empty.
- */
-function loadInitial(): Testimonial[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === null) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seedTestimonials));
-      return seedTestimonials;
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return seedTestimonials;
-  }
-}
-
 function initials(name: string): string {
   return name
     .trim()
@@ -65,14 +44,32 @@ const emptyForm = { name: '', title: '', company: '', message: '', rating: 0, im
 
 export function Feedback() {
   const [items, setItems] = useState<Testimonial[]>([]);
+  const [status, setStatus] = useState<'loading' | 'ready'>('loading');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Load real, shared reviews from the API. If it isn't configured yet
+  // (local dev / pre-deploy), fall back to the seed list so the section
+  // still looks populated instead of broken.
   useEffect(() => {
-    setItems(loadInitial());
+    let alive = true;
+    fetch('/api/feedback')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad status'))))
+      .then((data: { items: Testimonial[] }) => {
+        if (alive) setItems(Array.isArray(data.items) ? data.items : []);
+      })
+      .catch(() => {
+        if (alive) setItems(seedTestimonials);
+      })
+      .finally(() => {
+        if (alive) setStatus('ready');
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // Lock scroll + Escape to close while the form is open
@@ -87,25 +84,10 @@ export function Feedback() {
     };
   }, [open]);
 
-  const all = items;
   const average = useMemo(
-    () => (all.length ? all.reduce((s, t) => s + t.rating, 0) / all.length : 0),
-    [all],
+    () => (items.length ? items.reduce((s, t) => s + t.rating, 0) / items.length : 0),
+    [items],
   );
-
-  const persist = (next: Testimonial[]) => {
-    setItems(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* storage full / unavailable — keep in memory */
-    }
-  };
-
-  const remove = (id: string) => {
-    persist(items.filter((t) => t.id !== id));
-    setConfirmId(null);
-  };
 
   const onPickImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,8 +100,9 @@ export function Feedback() {
     }
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!form.name.trim() || !form.message.trim()) {
       setError('Please add your name and a short message.');
       return;
@@ -128,20 +111,35 @@ export function Feedback() {
       setError('Please pick a star rating.');
       return;
     }
-    const entry: Testimonial = {
-      id: `u-${Date.now()}`,
-      name: form.name.trim(),
-      title: form.title.trim(),
-      company: form.company.trim() || undefined,
-      rating: form.rating,
-      message: form.message.trim(),
-      image: form.image || undefined,
-      date: new Date().toISOString(),
-    };
-    persist([entry, ...items]);
-    setForm(emptyForm);
+
+    setSubmitting(true);
     setError('');
-    setOpen(false);
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          title: form.title.trim(),
+          company: form.company.trim(),
+          message: form.message.trim(),
+          rating: form.rating,
+          image: form.image,
+        }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? 'Could not submit.');
+      }
+      const { item } = (await res.json()) as { item: Testimonial };
+      setItems((prev) => [item, ...prev]);
+      setForm(emptyForm);
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not submit — please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -153,7 +151,7 @@ export function Feedback() {
           <span className="fb-score-num">{average.toFixed(1)}</span>
           <div className="fb-score-meta">
             <StarRating value={Math.round(average)} size={16} />
-            <span className="fb-score-count">{all.length} reviews</span>
+            <span className="fb-score-count">{items.length} reviews</span>
           </div>
         </div>
         <button type="button" className="fb-cta" onClick={() => setOpen(true)}>
@@ -162,23 +160,12 @@ export function Feedback() {
       </div>
 
       <div className="fb-grid">
-        {all.length === 0 && (
+        {status === 'loading' && <p className="fb-empty">Loading reviews…</p>}
+        {status === 'ready' && items.length === 0 && (
           <p className="fb-empty">No reviews yet — be the first to share one.</p>
         )}
-        {all.map((t) => (
+        {items.map((t) => (
           <article className="fb-card" key={t.id}>
-            <button
-              type="button"
-              className="fb-del"
-              onClick={() => setConfirmId(t.id)}
-              aria-label={`Delete review from ${t.name}`}
-              title="Delete review"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
-              </svg>
-            </button>
-
             <div className="fb-card-top">
               {t.image ? (
                 <img className="fb-avatar" src={t.image} alt={t.name} />
@@ -197,24 +184,6 @@ export function Feedback() {
             </div>
             <StarRating value={t.rating} size={15} />
             <p className="fb-message">{t.message}</p>
-
-            {confirmId === t.id && (
-              <div className="fb-confirm" role="alertdialog" aria-label="Confirm delete">
-                <p>Delete this review?</p>
-                <div className="fb-confirm-actions">
-                  <button
-                    type="button"
-                    className="fb-btn-ghost"
-                    onClick={() => setConfirmId(null)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="button" className="fb-btn-danger" onClick={() => remove(t.id)}>
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
           </article>
         ))}
       </div>
@@ -343,8 +312,8 @@ export function Feedback() {
                 <button type="button" className="fb-btn-ghost" onClick={() => setOpen(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="fb-btn-primary">
-                  Submit feedback
+                <button type="submit" className="fb-btn-primary" disabled={submitting}>
+                  {submitting ? 'Submitting…' : 'Submit feedback'}
                 </button>
               </div>
             </form>

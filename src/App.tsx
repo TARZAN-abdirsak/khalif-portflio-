@@ -1,5 +1,6 @@
 import { About } from './components/About';
 import { Approach } from './components/Approach';
+import { ChatWidget } from './components/ChatWidget';
 import { Cursor } from './components/Cursor';
 import { Engagements } from './components/Engagements';
 import { Expertise } from './components/Expertise';
@@ -26,6 +27,7 @@ export default function App() {
       </main>
 
       <Footer />
+      <ChatWidget />
     </>
   );
 }
