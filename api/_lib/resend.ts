@@ -2,6 +2,7 @@
  * Resend email helpers. Both notifications are best-effort: callers should
  * wrap them so a mail failure never blocks the primary action (saving data).
  * Env: RESEND_API_KEY, RESEND_FROM (verified domain sender), NOTIFY_EMAIL.
+ * Optional: LOGO_URL (absolute https URL to a logo image shown in the header).
  */
 import { Resend } from 'resend';
 
@@ -29,6 +30,72 @@ function to(): string {
 const esc = (s: string) =>
   s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string));
 
+/* ── Brand palette (mirrors the site) ── */
+const C = {
+  ink: '#161410',
+  cream: '#fbf9f4',
+  page: '#eceae5',
+  text: '#161410',
+  dim: '#5e584e',
+  mute: '#938b7e',
+  border: '#e6e1d6',
+  gold: '#c08a2e',
+};
+
+const FONT =
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+
+/** Branded header: logo image if LOGO_URL is set, otherwise the wordmark. */
+function header(): string {
+  const logo = process.env.LOGO_URL;
+  const brand = logo
+    ? `<img src="${logo}" alt="Khalif Rooble" height="28" style="display:block;border:0;outline:none;">`
+    : `<span style="font-family:${FONT};color:${C.cream};font-size:16px;font-weight:700;letter-spacing:3px;">KHALIF&nbsp;ROOBLE</span>`;
+  return `
+    <tr><td style="background:${C.ink};padding:22px 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td align="left">${brand}</td>
+        <td align="right" style="font-family:${FONT};color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Independent&nbsp;Consultant</td>
+      </tr></table>
+    </td></tr>`;
+}
+
+/** Wrap body content in the branded email shell. */
+function shell(opts: { preheader: string; eyebrow: string; heading: string; body: string }): string {
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+  <body style="margin:0;padding:0;background:${C.page};">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(opts.preheader)}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.page};padding:28px 12px;">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${C.cream};border:1px solid ${C.border};border-radius:16px;overflow:hidden;">
+          ${header()}
+          <tr><td style="padding:32px 32px 8px;">
+            <p style="font-family:${FONT};margin:0 0 6px;color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">${esc(opts.eyebrow)}</p>
+            <h1 style="font-family:${FONT};margin:0 0 20px;color:${C.text};font-size:22px;font-weight:600;letter-spacing:-0.01em;">${esc(opts.heading)}</h1>
+            ${opts.body}
+          </td></tr>
+          <tr><td style="padding:18px 32px;border-top:1px solid ${C.border};background:#f0ede6;">
+            <p style="font-family:${FONT};margin:0;color:${C.mute};font-size:12px;">Sent automatically from your portfolio at khalifroble.com</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body></html>`;
+}
+
+function quoteCard(text: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 8px;">
+    <tr><td style="background:#ffffff;border:1px solid ${C.border};border-left:3px solid ${C.ink};border-radius:10px;padding:16px 18px;font-family:${FONT};color:${C.text};font-size:15px;line-height:1.6;">${esc(text)}</td></tr>
+  </table>`;
+}
+
+function button(label: string, href: string): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:18px 0 6px;"><tr>
+    <td style="background:${C.ink};border-radius:999px;">
+      <a href="${href}" style="display:inline-block;padding:11px 24px;font-family:${FONT};color:${C.cream};font-size:14px;font-weight:600;text-decoration:none;">${esc(label)}</a>
+    </td></tr></table>`;
+}
+
 export interface FeedbackMail {
   name: string;
   title?: string;
@@ -37,21 +104,33 @@ export interface FeedbackMail {
   message: string;
 }
 
-export async function notifyFeedback(f: FeedbackMail): Promise<void> {
-  const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+export function renderFeedbackEmail(f: FeedbackMail): string {
+  const stars =
+    `<span style="color:${C.gold};font-size:18px;letter-spacing:2px;">${'★'.repeat(f.rating)}</span>` +
+    `<span style="color:#cfc8ba;font-size:18px;letter-spacing:2px;">${'☆'.repeat(5 - f.rating)}</span>` +
+    `<span style="font-family:${FONT};color:${C.mute};font-size:13px;"> &nbsp;${f.rating}/5</span>`;
   const who = [f.title, f.company].filter(Boolean).join(' · ');
+
+  const body = `
+    <p style="margin:0 0 14px;">${stars}</p>
+    <p style="font-family:${FONT};margin:0 0 2px;color:${C.text};font-size:16px;font-weight:600;">${esc(f.name)}</p>
+    ${who ? `<p style="font-family:${FONT};margin:0 0 14px;color:${C.dim};font-size:13px;">${esc(who)}</p>` : ''}
+    ${quoteCard(f.message)}`;
+
+  return shell({
+    preheader: `${f.rating}★ — "${f.message.slice(0, 80)}"`,
+    eyebrow: 'New website review',
+    heading: `${f.name} left a ${f.rating}-star review`,
+    body,
+  });
+}
+
+export async function notifyFeedback(f: FeedbackMail): Promise<void> {
   await getClient().emails.send({
     from: from(),
     to: to(),
     subject: `New review · ${f.rating}★ from ${f.name}`,
-    html: `
-      <h2 style="margin:0 0 4px">New website review</h2>
-      <p style="margin:0 0 12px;color:#666">${stars} (${f.rating}/5)</p>
-      <p style="margin:0"><strong>${esc(f.name)}</strong>${who ? ` — ${esc(who)}` : ''}</p>
-      <blockquote style="margin:12px 0;padding:12px 16px;border-left:3px solid #ddd;background:#faf9f6">
-        ${esc(f.message)}
-      </blockquote>
-    `,
+    html: renderFeedbackEmail(f),
   });
 }
 
@@ -63,26 +142,43 @@ export interface LeadMail {
   need: string;
 }
 
-export async function notifyLead(l: LeadMail): Promise<void> {
-  const contact = [
-    l.email && `Email: ${esc(l.email)}`,
-    l.phone && `Phone: ${esc(l.phone)}`,
-    l.company && `Company: ${esc(l.company)}`,
+export function renderLeadEmail(l: LeadMail): string {
+  const row = (label: string, value: string, href?: string) =>
+    `<tr>
+      <td style="font-family:${FONT};color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:4px 16px 4px 0;white-space:nowrap;vertical-align:top;">${label}</td>
+      <td style="font-family:${FONT};color:${C.text};font-size:15px;padding:4px 0;">${
+        href ? `<a href="${href}" style="color:${C.ink};text-decoration:none;border-bottom:1px solid ${C.border};">${esc(value)}</a>` : esc(value)
+      }</td>
+    </tr>`;
+
+  const rows = [
+    l.email && row('Email', l.email, `mailto:${l.email}`),
+    l.phone && row('Phone', l.phone, `tel:${l.phone}`),
+    l.company && row('Company', l.company),
   ]
     .filter(Boolean)
-    .join('<br>');
+    .join('');
+
+  const body = `
+    <p style="font-family:${FONT};margin:0 0 14px;color:${C.text};font-size:18px;font-weight:600;">${esc(l.name)}</p>
+    ${rows ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;">${rows}</table>` : ''}
+    <p style="font-family:${FONT};margin:0 0 4px;color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;">What they need</p>
+    ${quoteCard(l.need)}
+    ${l.email ? button(`Reply to ${l.name}`, `mailto:${l.email}`) : ''}`;
+
+  return shell({
+    preheader: `${l.name}: ${l.need.slice(0, 80)}`,
+    eyebrow: 'New lead from the assistant',
+    heading: `${l.name} wants to connect`,
+    body,
+  });
+}
+
+export async function notifyLead(l: LeadMail): Promise<void> {
   await getClient().emails.send({
     from: from(),
     to: to(),
     subject: `New lead · ${l.name}`,
-    html: `
-      <h2 style="margin:0 0 8px">New lead from the assistant</h2>
-      <p style="margin:0 0 8px"><strong>${esc(l.name)}</strong></p>
-      ${contact ? `<p style="margin:0 0 12px;color:#444">${contact}</p>` : ''}
-      <p style="margin:0 0 4px;color:#666">What they need:</p>
-      <blockquote style="margin:0;padding:12px 16px;border-left:3px solid #ddd;background:#faf9f6">
-        ${esc(l.need)}
-      </blockquote>
-    `,
+    html: renderLeadEmail(l),
   });
 }
