@@ -55,7 +55,7 @@ function header(): string {
     <tr><td style="background:${C.ink};padding:22px 32px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
         <td align="left">${brand}</td>
-        <td align="right" style="font-family:${FONT};color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Independent&nbsp;Consultant</td>
+        <td align="right" style="font-family:${FONT};color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Financial&nbsp;Strategy&nbsp;Advisor</td>
       </tr></table>
     </td></tr>`;
 }
@@ -198,7 +198,7 @@ export function renderThankYouEmail(l: LeadMail): string {
             ? `<img src="${process.env.LOGO_URL}" alt="Khalif Rooble" height="32" style="display:block;border:0;margin:0 auto;">`
             : `<span style="font-family:${FONT};color:${C.ink};font-size:17px;font-weight:700;letter-spacing:4px;">KHALIF&nbsp;ROOBLE</span>`
         }
-        <p style="font-family:${FONT};margin:10px 0 0;color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Independent Consultant</p>
+        <p style="font-family:${FONT};margin:10px 0 0;color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Financial Strategy Advisor</p>
       </td></tr>`;
 
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -216,7 +216,7 @@ export function renderThankYouEmail(l: LeadMail): string {
             <p style="${p}margin-top:22px;">Looking forward to connecting and seeing how I can help.</p>
           </td></tr>
           <tr><td style="padding:4px 40px 36px;">
-            <p style="font-family:${FONT};margin:0;color:${C.text};font-size:16px;line-height:1.6;">Warm regards,<br><strong>Khalif Rooble</strong><br><span style="color:${C.mute};font-size:13px;">Independent Consultant</span></p>
+            <p style="font-family:${FONT};margin:0;color:${C.text};font-size:16px;line-height:1.6;">Warm regards,<br><strong>Khalif Rooble</strong><br><span style="color:${C.mute};font-size:13px;">Financial Strategy Advisor</span></p>
           </td></tr>
           <tr><td style="padding:18px 40px;border-top:1px solid ${C.border};background:#f0ede6;">
             <p style="font-family:${FONT};margin:0;color:${C.mute};font-size:12px;">khalifroble.com · This is an automated confirmation of your message.</p>
