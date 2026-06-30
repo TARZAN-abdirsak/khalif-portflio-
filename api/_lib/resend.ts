@@ -182,3 +182,36 @@ export async function notifyLead(l: LeadMail): Promise<void> {
     html: renderLeadEmail(l),
   });
 }
+
+/* ── Confirmation sent to the VISITOR who left their details ── */
+
+export function renderThankYouEmail(l: LeadMail): string {
+  const body = `
+    <p style="font-family:${FONT};margin:0 0 14px;color:${C.text};font-size:15px;line-height:1.6;">Hi ${esc(l.name)},</p>
+    <p style="font-family:${FONT};margin:0 0 14px;color:${C.text};font-size:15px;line-height:1.6;">
+      Thanks for reaching out through khalifroble.com. Your message has been received, and
+      Khalif will personally get back to you <strong>within 24 hours</strong>.
+    </p>
+    <p style="font-family:${FONT};margin:0 0 4px;color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;">Your message</p>
+    ${quoteCard(l.need)}
+    <p style="font-family:${FONT};margin:16px 0 0;color:${C.text};font-size:15px;line-height:1.6;">Talk soon,<br><strong>Khalif Rooble</strong><br>
+      <span style="color:${C.mute};font-size:13px;">Independent Consultant</span></p>`;
+
+  return shell({
+    preheader: 'Thanks for reaching out — Khalif will reply within 24 hours.',
+    eyebrow: 'Thank you',
+    heading: `Thanks for getting in touch, ${l.name}`,
+    body,
+  });
+}
+
+/** Best-effort confirmation to the visitor. No-op if no email was captured. */
+export async function sendLeadConfirmation(l: LeadMail): Promise<void> {
+  if (!l.email) return;
+  await getClient().emails.send({
+    from: from(),
+    to: l.email,
+    subject: 'Thanks for reaching out — Khalif will be in touch',
+    html: renderThankYouEmail(l),
+  });
+}

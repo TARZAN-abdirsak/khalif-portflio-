@@ -16,7 +16,7 @@ import {
 } from '@google/generative-ai';
 import { SYSTEM_PROMPT } from './_lib/knowledge';
 import { getDb } from './_lib/firebase';
-import { notifyLead } from './_lib/resend';
+import { notifyLead, sendLeadConfirmation } from './_lib/resend';
 
 const MAX_MESSAGES = 24;
 const MAX_TEXT = 4000;
@@ -80,6 +80,20 @@ async function saveLead(args: LeadArgs): Promise<{ ok: boolean }> {
   } catch (err) {
     console.error('notifyLead failed:', err);
   }
+
+  // Confirmation to the visitor (best-effort; no-op without an email).
+  try {
+    await sendLeadConfirmation({
+      name,
+      email: lead.email ?? undefined,
+      phone: lead.phone ?? undefined,
+      company: lead.company ?? undefined,
+      need,
+    });
+  } catch (err) {
+    console.error('sendLeadConfirmation failed:', err);
+  }
+
   return { ok: true };
 }
 
