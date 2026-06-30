@@ -186,23 +186,45 @@ export async function notifyLead(l: LeadMail): Promise<void> {
 /* ── Confirmation sent to the VISITOR who left their details ── */
 
 export function renderThankYouEmail(l: LeadMail): string {
-  const body = `
-    <p style="font-family:${FONT};margin:0 0 14px;color:${C.text};font-size:15px;line-height:1.6;">Hi ${esc(l.name)},</p>
-    <p style="font-family:${FONT};margin:0 0 14px;color:${C.text};font-size:15px;line-height:1.6;">
-      Thanks for reaching out through khalifroble.com. Your message has been received, and
-      Khalif will personally get back to you <strong>within 24 hours</strong>.
-    </p>
-    <p style="font-family:${FONT};margin:0 0 4px;color:${C.mute};font-size:12px;text-transform:uppercase;letter-spacing:1px;">Your message</p>
-    ${quoteCard(l.need)}
-    <p style="font-family:${FONT};margin:16px 0 0;color:${C.text};font-size:15px;line-height:1.6;">Talk soon,<br><strong>Khalif Rooble</strong><br>
-      <span style="color:${C.mute};font-size:13px;">Independent Consultant</span></p>`;
+  const heart = `<span style="color:${C.gold};">&#9829;</span>`;
+  const p = `font-family:${FONT};margin:0 0 16px;color:${C.text};font-size:16px;line-height:1.65;`;
 
-  return shell({
-    preheader: 'Thanks for reaching out — Khalif will reply within 24 hours.',
-    eyebrow: 'Thank you',
-    heading: `Thanks for getting in touch, ${l.name}`,
-    body,
-  });
+  // Warm header: banner image > logo > wordmark.
+  const head = process.env.BANNER_URL
+    ? `<tr><td><img src="${process.env.BANNER_URL}" alt="" width="600" style="display:block;width:100%;max-width:600px;border:0;"></td></tr>`
+    : `<tr><td align="center" style="background:#f3ede1;padding:34px 32px 30px;">
+        ${
+          process.env.LOGO_URL
+            ? `<img src="${process.env.LOGO_URL}" alt="Khalif Rooble" height="32" style="display:block;border:0;margin:0 auto;">`
+            : `<span style="font-family:${FONT};color:${C.ink};font-size:17px;font-weight:700;letter-spacing:4px;">KHALIF&nbsp;ROOBLE</span>`
+        }
+        <p style="font-family:${FONT};margin:10px 0 0;color:${C.mute};font-size:11px;letter-spacing:2px;text-transform:uppercase;">Independent Consultant</p>
+      </td></tr>`;
+
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+  <body style="margin:0;padding:0;background:${C.page};">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Thanks for reaching out — Khalif will reply within 24 hours.</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.page};padding:32px 12px;">
+      <tr><td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${C.cream};border:1px solid ${C.border};border-radius:18px;overflow:hidden;">
+          ${head}
+          <tr><td style="padding:38px 40px 4px;">
+            <h1 style="font-family:${FONT};margin:0 0 22px;color:${C.text};font-size:30px;font-weight:700;letter-spacing:-0.02em;">Thank you, ${esc(l.name)} ${heart}</h1>
+            <p style="${p}">Thank you so much for reaching out through khalifroble.com — it genuinely means a lot.</p>
+            <p style="${p}">I've received your message and I'll personally get back to you <strong>within 24 hours</strong>. Here's what you shared with me:</p>
+            ${quoteCard(l.need)}
+            <p style="${p}margin-top:22px;">Looking forward to connecting and seeing how I can help.</p>
+          </td></tr>
+          <tr><td style="padding:4px 40px 36px;">
+            <p style="font-family:${FONT};margin:0;color:${C.text};font-size:16px;line-height:1.6;">Warm regards,<br><strong>Khalif Rooble</strong><br><span style="color:${C.mute};font-size:13px;">Independent Consultant</span></p>
+          </td></tr>
+          <tr><td style="padding:18px 40px;border-top:1px solid ${C.border};background:#f0ede6;">
+            <p style="font-family:${FONT};margin:0;color:${C.mute};font-size:12px;">khalifroble.com · This is an automated confirmation of your message.</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body></html>`;
 }
 
 /** Best-effort confirmation to the visitor. No-op if no email was captured. */
