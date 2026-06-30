@@ -1,0 +1,25 @@
+node_modules
+dist
+dist-ssr
+.vite
+.DS_Store
+*.local
+.env
+.env.*
+!.env.example
+
+# Editor
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Build artifacts
+*.tsbuildinfo
+
+# Agent tooling
+.claude/
+.agents/
+
+# Logs
+*.log
+npm-debug.log*
