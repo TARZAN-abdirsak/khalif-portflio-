@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { seedTestimonials } from '../data/testimonials';
 import type { Testimonial } from '../types';
 import { SectionHead } from './SectionHead';
@@ -188,7 +189,7 @@ export function Feedback() {
         ))}
       </div>
 
-      {open && (
+      {open && createPortal(
         <div className="fb-modal-backdrop" onClick={() => setOpen(false)}>
           <div
             className="fb-modal"
@@ -318,7 +319,8 @@ export function Feedback() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </section>
   );

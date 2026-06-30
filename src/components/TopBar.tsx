@@ -11,22 +11,8 @@ export function TopBar() {
   return (
     <header className="topbar">
       <a href="#top" className="brand" aria-label="Khalif Rooble — home">
-        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect
-            x="16"
-            y="2"
-            width="19.8"
-            height="19.8"
-            transform="rotate(45 16 2)"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M16 9 L16 23 M16 16 L22 10 M16 16 L22 22"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-        </svg>
+        <img src="/kr-logo.png" alt="KR Logo" className="brand-logo brand-logo--day" />
+        <img src="/kr-logo-white.png" alt="" aria-hidden="true" className="brand-logo brand-logo--night" />
         <span className="brand-word">Khalif&nbsp;Rooble</span>
       </a>
 
@@ -40,8 +26,8 @@ export function TopBar() {
 
       <div className="topbar-actions">
         <ThemeToggle />
-        <a href="mailto:khalif.rooble@consulting.co" className="book-call">
-          Book A Call <span aria-hidden="true">↗</span>
+        <a href="https://wa.me/252614177744" target="_blank" rel="noopener noreferrer" className="book-call">
+          Call Me <span aria-hidden="true">↗</span>
         </a>
       </div>
     </header>
