@@ -1886,7 +1886,7 @@ section:first-of-type {
 }
 
 .star--on {
-  fill: var(--ink);
+  fill: #ffc107;
 }
 
 .stars--input {
@@ -2132,6 +2132,7 @@ section:first-of-type {
   height: 46px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center 20%;
   flex-shrink: 0;
   display: grid;
   place-items: center;
