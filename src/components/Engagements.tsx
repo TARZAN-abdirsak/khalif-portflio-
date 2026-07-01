@@ -65,7 +65,7 @@ export function Engagements() {
 
   return (
     <section id="engagements">
-      <SectionHead num="05" label="Selected Engagements" meta="2019 — Present" />
+      <SectionHead num="06" label="Selected Engagements" meta="2010 — Present" />
 
       <div className="eng-tree" ref={treeRef}>
         <div className="eng-scroll-hint" aria-hidden="true">

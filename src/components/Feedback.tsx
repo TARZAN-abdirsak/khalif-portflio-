@@ -145,7 +145,7 @@ export function Feedback() {
 
   return (
     <section id="feedback">
-      <SectionHead num="06" label="Feedback" meta="What Clients Say" />
+      <SectionHead num="07" label="Feedback" meta="What Clients Say" />
 
       <div className="fb-bar">
         <div className="fb-score">

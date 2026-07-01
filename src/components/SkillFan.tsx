@@ -1,25 +1,34 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { skills } from '../data/skills';
 import { SectionHead } from './SectionHead';
 import type { Skill } from '../types';
 
-export function Expertise() {
+interface SkillFanProps {
+  id: string;
+  num: string;
+  label: string;
+  meta: string;
+  /** Eyebrow shown in the detail sheet, e.g. "Expertise" or "Services". */
+  eyebrow: string;
+  items: Skill[];
+}
+
+/**
+ * Scroll-driven fan of skill cards, reused for both the Expertise and Services
+ * sections. Cards start stacked at centre and fan out as the section rises.
+ */
+export function SkillFan({ id, num, label, meta, eyebrow, items }: SkillFanProps) {
   const fanRef = useRef<HTMLDivElement>(null);
   const [openSkill, setOpenSkill] = useState<Skill | null>(null);
   const [vw, setVw] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth : 1280,
   );
 
-  // Track viewport width so the spread distance can adapt responsively.
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Scroll-driven spread: cards start in a neat stack at centre and fan
-  // out toward the sides as the section scrolls toward the viewport centre.
-  // We write progress (0 → 1) to a CSS var so the GPU does the layout.
   useEffect(() => {
     const el = fanRef.current;
     if (!el) return;
@@ -29,8 +38,6 @@ export function Expertise() {
       const rect = el.getBoundingClientRect();
       const wh = window.innerHeight || 1;
       const centre = rect.top + rect.height / 2;
-      // 0 when the fan's centre sits at the bottom of the viewport,
-      // 1 once it has risen to ~45% up the screen.
       const p = Math.max(0, Math.min(1, (wh - centre) / (wh * 0.55)));
       el.style.setProperty('--p', p.toFixed(3));
     };
@@ -45,19 +52,13 @@ export function Expertise() {
     };
   }, []);
 
-  // Prevent background scroll when the detail sheet is open.
   useEffect(() => {
-    if (openSkill) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = openSkill ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
   }, [openSkill]);
 
-  // Escape key closes detail sheet.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpenSkill(null);
@@ -66,27 +67,25 @@ export function Expertise() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Close the sheet when hash changes (i.e. navigation occurs via topbar or browser back button)
   useEffect(() => {
-    const handleHashChange = () => {
-      setOpenSkill(null);
-    };
+    const handleHashChange = () => setOpenSkill(null);
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  const mid = (items.length - 1) / 2;
+
   return (
-    <section id="expertise">
-      <SectionHead num="03" label="Expertise" meta="Four Practices · One Discipline" />
+    <section id={id}>
+      <SectionHead num={num} label={label} meta={meta} />
 
       <div className="expertise-fan" ref={fanRef}>
-        {skills.map((skill, i) => {
-          // Adjust distance (spread) dynamically based on viewport width
+        {items.map((skill, i) => {
           const gap = vw < 1024 ? (vw < 900 ? 210 : 250) : 300;
-          const x = (i - 1.5) * gap;
-          const y = Math.abs(i - 1.5) * 15; // subtle arch shape
-          const rot = (i - 1.5) * 8; // fanned rotation
-          const z = i === 1 || i === 2 ? 10 : 5;
+          const x = (i - mid) * gap;
+          const y = Math.abs(i - mid) * 15;
+          const rot = (i - mid) * 8;
+          const z = Math.round(10 - Math.abs(i - mid) * 3);
 
           const style: CSSProperties = {
             '--x': `${x}px`,
@@ -108,8 +107,7 @@ export function Expertise() {
               <div className="fan-card-body">
                 <span className="fan-card-index">{skill.index}</span>
                 <h3 className="fan-card-title">
-                  {skill.titleLeft}{' '}
-                  <span className="italic">{skill.titleRight}</span>
+                  {skill.titleLeft} <span className="italic">{skill.titleRight}</span>
                 </h3>
               </div>
             </button>
@@ -122,12 +120,12 @@ export function Expertise() {
           <div className="service-sheet-inner">
             <header className="service-sheet-bar">
               <span className="service-eyebrow">
-                Services <span className="accent">/ {openSkill.index}</span>
+                {eyebrow} <span className="accent">/ {openSkill.index}</span>
               </span>
               <button
                 className="service-back"
                 onClick={() => setOpenSkill(null)}
-                aria-label="Back to services"
+                aria-label="Back"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="19" y1="12" x2="5" y2="12" />

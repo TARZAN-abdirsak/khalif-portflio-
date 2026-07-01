@@ -189,15 +189,19 @@ export function About() {
         <article className="about-right">
           <div className="about-eyebrow">
             <div className="about-eyebrow-box" />
-            <span>What I Do &amp; Why It Matters</span>
+            <span>Who I Am</span>
           </div>
 
           <h3 className="about-lead-text">
-            Many organizations struggle with fragmented workflows, disconnected systems, manual reporting, and operational inefficiencies that quietly erode profitability.
+            I'm an Operations &amp; Development Manager, ERP Consultant, and Accountant — supporting organizations across healthcare, commercial, and non-profit sectors.
           </h3>
 
           <p className="about-body-text">
-            I help organizations eliminate these challenges by aligning operations, finance, and technology into a single integrated ecosystem. By combining executive-level financial expertise with deep ERP implementation experience, healthcare operations knowledge, and advanced business intelligence capabilities, I design systems that deliver operational transparency, financial control, and sustainable growth.
+            My career has taken me through management and accounting roles in East Africa, where I've helped organizations improve their operations, strengthen financial management, and successfully adopt digital systems. I hold a Bachelor of Business Administration (BBA) and a Diploma in Health Management, giving me a strong understanding of both business operations and healthcare administration.
+          </p>
+
+          <p className="about-body-text">
+            I enjoy helping organizations work more efficiently by improving processes, implementing ERP systems, and turning business data into practical insight for decision-making.
           </p>
 
           <div className="about-gains-section">

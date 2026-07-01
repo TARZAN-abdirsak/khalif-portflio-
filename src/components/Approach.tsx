@@ -7,7 +7,7 @@ export function Approach() {
 
   return (
     <section id="approach">
-      <SectionHead num="04" label="Approach" meta="How Engagements Run" />
+      <SectionHead num="05" label="Approach" meta="How Engagements Run" />
 
       <div className="approach-list reveal" ref={listRef}>
         {approachSteps.map((step) => (

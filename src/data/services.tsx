@@ -1,6 +1,6 @@
 import type { Skill } from '../types';
 
-export const skills: Skill[] = [
+export const services: Skill[] = [
   {
     index: 'i.',
     number: '01 / 04',
