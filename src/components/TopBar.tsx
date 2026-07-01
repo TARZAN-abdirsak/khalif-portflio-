@@ -4,7 +4,7 @@ const NAV = [
   { href: '#about', label: 'About' },
   { href: '#expertise', label: 'Expertise' },
   { href: '#services', label: 'Services' },
-  { href: '#engagements', label: 'Engagements' },
+  { href: '#engagements', label: 'Experience' },
 ] as const;
 
 export function TopBar() {
