@@ -9,14 +9,14 @@ export const stats: StatItem[] = [
 
 export const currentlyRows: AsideRow[] = [
   { left: 'Based in', right: 'Mogadishu, SO' },
-  { left: 'Working with', right: 'Regional Logistics PLC' },
-  { left: 'Available from', right: 'Q3 · 2026' },
+  { left: 'Education', right: 'BBA · Dip. Health Mgmt' },
+  { left: 'Focus', right: 'ERP · Healthcare · Finance' },
   { left: 'Languages', right: 'EN · SO · AR' },
 ];
 
 export const sectorRows: AsideRow[] = [
-  { left: 'Logistics & Trade', right: '—' },
-  { left: 'Financial Services', right: '—' },
-  { left: 'Public Sector', right: '—' },
-  { left: 'Development & INGO', right: '—' },
+  { left: 'Healthcare & Hospitals', right: '—' },
+  { left: 'Commercial & Trade', right: '—' },
+  { left: 'Non-Profit & NGO', right: '—' },
+  { left: 'Finance & Operations', right: '—' },
 ];

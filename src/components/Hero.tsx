@@ -25,7 +25,7 @@ export function Hero() {
         <div className="hero-greeting">
           <h1 className="hero-hello">Hello</h1>
           <p className="hero-tagline">
-            — I'm Khalif Rooble: ERP &amp; Digital Transformation Consultant | Healthcare Systems Architect | Financial Strategy Advisor
+            — I'm Khalif Rooble: Operations &amp; Development Manager | ERP Consultant | Accountant
           </p>
         </div>
 

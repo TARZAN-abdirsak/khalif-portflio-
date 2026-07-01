@@ -3,30 +3,30 @@ import type { ApproachStep } from '../types';
 export const approachSteps: ApproachStep[] = [
   {
     numeral: 'i',
-    title: ' Assesment',
+    title: 'Analyze',
     description:
-      "Two weeks of structured listening. Interviews, data review, and a materials audit to map what's actually happening — not what the org chart says is happening.",
-    phase: 'Week 1 – 2',
+      'I start by understanding how the organization actually works — mapping existing business processes, data, and pain points before changing anything.',
+    phase: 'Discovery',
   },
   {
     numeral: 'ii',
-    title: 'Design',
+    title: 'Configure',
     description:
-      'A written diagnosis, a recommended path, and a costed plan. No PowerPoint theatre — a memo a board can act on, with tradeoffs named honestly.',
-    phase: 'Week 3 – 4',
+      'I configure and customize the system to match the way the business needs to run — not the other way around — improving processes along the way.',
+    phase: 'Build',
   },
   {
     numeral: 'iii',
-    title: 'Deliver',
+    title: 'Train',
     description:
-      'Hands on the work. Standing up the PMO, leading the ERP rollout, building the financial close, or running the GTM motion alongside your team — whatever the engagement requires.',
-    phase: 'Month 2 – 9',
+      'I train users hands-on so the team adopts the new system with confidence and owns it day to day.',
+    phase: 'Enablement',
   },
   {
     numeral: 'iv',
-    title: 'Hand off',
+    title: 'Launch',
     description:
-      'Documentation, capability transfer, and a 90-day support window. The goal is that your team owns it — confidently, not anxiously — when I leave.',
-    phase: 'Closing',
+      'I launch the solution and provide ongoing support — staying close after go-live so the system keeps delivering value.',
+    phase: 'Go-Live',
   },
 ];

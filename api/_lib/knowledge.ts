@@ -8,44 +8,47 @@
 export const KHALIF_CONTEXT = `
 PROFILE
 - Name: Khalif Rooble
-- Role: Independent Consultant
-- Headline: ERP & Digital Transformation Consultant · Healthcare Systems Architect · Financial Strategy Advisor
-- Based in: Mogadishu, Somalia
+- Role: Operations & Development Manager, ERP Consultant, and Accountant
+- Based in: Mogadishu, Somalia (experience across East Africa — Somalia & Uganda)
 - Languages: English, Somali, Arabic
-- Availability: from Q3 2026 (currently engaged with Regional Logistics PLC)
-- Track record: 12+ years in practice, 40+ engagements delivered, 9 countries served, ~$120m in budgets stewarded
+- Education: Bachelor of Business Administration (BBA); Diploma in Health Management
+- Summary: supports organizations in healthcare, commercial businesses, and non-profit sectors —
+  improving operations, strengthening financial management, and adopting digital systems. He enjoys
+  making organizations more efficient by improving processes, implementing ERP systems, and turning
+  business data into practical insight for decision-making.
+
+EXPERTISE
+- Healthcare: Hospital Management Systems (HMS), clinical & patient workflows, medical finance &
+  cost accounting, hospital operations and digital transformation.
+- Commercial & Non-Profit: trading & distribution businesses, logistics & supply chain,
+  NGO financial and operational processes, business process improvement.
+- Finance: financial modeling, IFRS-compliant financial reporting, budgeting & forecasting,
+  executive dashboards and business reporting.
 
 SERVICES
-1. Financial Management — management accounting to capital strategy: internal controls, reporting,
-   FP&A, cash-flow management, financial statement preparation, executive/board reporting,
-   budgeting & forecasting, revenue cycle, inventory control. Standards: IFRS, FP&A, controls.
-2. Project Management — plans and runs projects from kickoff to delivery: scope, timelines, budgets,
-   milestones, stakeholder coordination, risk management. Experience: ERP/system implementations,
-   healthcare & hospital rollouts, financial-systems setup, NGO/donor-funded coordination,
-   SME digital transformation. Certifications context: PMP, Prince2, Scrum.
-3. ERP Strategy & Digital Transformation — Odoo ERP and Next ERP implementation, requirements
-   analysis, business-process mapping, workflow optimization, user training. Functional areas:
-   Finance & Accounting, Procurement, Inventory, Sales & CRM, HR, Payroll, Asset Management,
-   Healthcare Operations. Platform familiarity: SAP, Oracle, Dynamics, Odoo.
-4. Enterprise Advisory — market positioning, go-to-market, channel design, commercial architecture.
-   Industries served: hospitals & healthcare, trading companies, distribution, logistics,
-   NGOs & development agencies, professional-service firms, multi-branch enterprises.
+1. ERP Systems — Odoo implementation and support, ERP Next implementation, functional configuration,
+   business process improvement, user training and system support.
+2. Hospital Digitization — Hospital Management System implementation, medical diagnostic package
+   setup, revenue cycle management, hospital chart of accounts design.
+3. Data Analytics — Microsoft Excel dashboards, Power BI dashboards, financial & operational
+   reporting, business performance analysis.
+4. Operations Management — team coordination, procurement process management, stakeholder
+   communication, operational planning and improvement.
 
-HOW HE WORKS (4 phases)
-- i. Assessment (Week 1–2): structured listening — interviews, data review, materials audit.
-- ii. Design (Week 3–4): written diagnosis, recommended path, costed plan (a memo a board can act on).
-- iii. Deliver (Month 2–9): hands-on — standing up the PMO, leading the ERP rollout, building the
-       financial close, or running the GTM motion alongside the client's team.
-- iv. Hand off (Closing): documentation, capability transfer, and a 90-day support window.
+HOW HE WORKS (4-step approach)
+1. Analyze existing business processes.
+2. Configure and customize the system to match business needs.
+3. Train users to ensure confident adoption.
+4. Launch the solution and provide ongoing support.
 
-EXPERIENCE
+EXPERIENCE (roles held)
 - 2021–present: Business Development Manager — Tayo Technology Solution, Mogadishu, Somalia (ERP, Finance)
 - 2017–2020: Chief Financial Officer — Bulsho Service Center, Kampala, Uganda (Finance, Operations)
-- 2014–2017: Branch Manager — Taaj Money Transfer, Kampala, Uganda (PMO, Operations)
-- 2013–2014: Accountant — T/Mire General Trading Company, Kampala, Uganda (Bookkeeping, Accounting)
+- 2014–2017: Branch Manager — Taaj Money Transfer, Kampala, Uganda (Operations)
+- 2013–2014: Accountant — T/Mire General Trading Company, Kampala, Uganda (Accounting)
 - 2010–2012: Chief Cashier — MidWest Forex Bureau, Kampala, Uganda
 
-SECTORS: Logistics & Trade, Financial Services, Public Sector, Development & INGO.
+SECTORS: Healthcare & Hospitals, Commercial & Trade, Non-Profit & NGO, Finance & Operations.
 `.trim();
 
 export const SYSTEM_PROMPT = `
